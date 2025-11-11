@@ -1,397 +1,394 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>どんぐり線分図で考えよう🌰（比で解く・10問＋アニメ）</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>電車で文章題クイズ 🚆</title>
 <style>
-body{
-  font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
-  background:linear-gradient(180deg,#f8fbff,#eef4ff);
-  display:flex;justify-content:center;align-items:center;min-height:100vh;
-  margin:0;padding:20px;
-}
-#app{
-  background:#fff;border-radius:16px;padding:24px;
-  box-shadow:0 10px 30px rgba(0,0,0,.1);
-  max-width:900px;width:95%; position:relative; overflow:hidden;
-}
+  :root{
+    --bg:#f7f8fb; --card:#ffffff; --ink:#222; --muted:#666; --accent:#2f7dff;
+    --ok:#22bb66; --ng:#ff4d4f; --rail:#c9d3e6;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+    color:var(--ink); background:linear-gradient(180deg,#eef3ff 0%,#f8fbff 50%, var(--bg) 100%);
+    display:flex; min-height:100svh; align-items:center; justify-content:center; padding:16px;
+  }
+  .app{
+    background:var(--card); width:min(880px,100%); border-radius:16px; box-shadow:0 12px 40px rgba(0,0,0,.08);
+    overflow:hidden; border:1px solid #e8eefc;
+  }
+  header{
+    padding:16px 20px; display:flex; gap:12px; align-items:center; justify-content:space-between; border-bottom:1px solid #eef2fe;
+  }
+  header .title{ font-weight:800; letter-spacing:.02em; display:flex; gap:8px; align-items:center; }
+  header .title .train{ font-size:24px }
+  header .meta{ display:flex; gap:16px; color:var(--muted); font-size:14px; align-items:center; }
+  header .pill{ background:#f1f5ff; color:#2a5bd7; padding:6px 10px; border-radius:999px; font-weight:700 }
 
-/* タイトル＆メタ */
-h1{text-align:center;margin-top:0;}
-#problem{
-  background:#f4f8ff;border-left:5px solid #2a7df9;padding:12px 16px;
-  margin-bottom:12px;line-height:1.6;
-}
-.meta{display:flex;gap:12px;justify-content:space-between;align-items:center;color:#4b64a6;margin-bottom:6px;font-size:14px}
-.badge{display:inline-block;background:#ecfbf1;color:#117a3b;border:1px solid #a0e5b7;font-size:12px;padding:2px 8px;border-radius:999px}
-.counter{font-weight:700}
+  .track{
+    position:relative; height:120px; background:linear-gradient(180deg,#fff, #fbfdff);
+    display:flex; align-items:flex-end; padding:0 20px 22px;
+    border-bottom:1px solid #eef2fe;
+  }
+  .rail{
+    position:relative; width:100%; height:10px; background:var(--rail); border-radius:6px; overflow:hidden;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.5), inset 0 -1px 0 rgba(0,0,0,.05);
+  }
+  .sleepers{
+    position:absolute; inset:0; display:grid; grid-auto-flow:column; grid-auto-columns:32px; align-items:stretch;
+  }
+  .sleepers::before,.sleepers::after{
+    content:""; display:block;
+  }
+  .sleepers div{ border-left:4px solid #b8c5dc; opacity:.7 }
+  .train{
+    position:absolute; bottom:46px; left:20px; translate:0 0; transition: transform .6s cubic-bezier(.2,.8,.2,1);
+    font-size:34px; filter: drop-shadow(0 6px 8px rgba(0,0,0,.15));
+  }
 
-/* 図 */
-#diagram{ margin:16px auto;max-width:720px;position:relative;min-height:240px; }
-.person{ display:flex;align-items:center;gap:8px;margin:18px 0; }
-.label{ width:90px;text-align:right;font-weight:700; }
+  .content{
+    padding:20px; display:grid; gap:16px;
+    grid-template-columns: 1fr 260px;
+  }
+  @media (max-width:720px){
+    .content{ grid-template-columns: 1fr; }
+  }
 
-.bar{
-  height:30px;border-radius:8px;color:#fff;font-size:0.95em;
-  display:flex;align-items:center;justify-content:center;
-  position:relative;overflow:hidden;
-  transition:width 0.7s cubic-bezier(.2,.9,.2,1), filter .3s ease, transform .24s ease;
-  box-shadow: inset 0 0 0 0 rgba(255,255,255,.25);
-}
-.A{ background:#2a7df9; }
-.B{ background:#ff8c42; }
+  .card{
+    background:#fff; border:1px solid #eef2fe; border-radius:12px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,.04);
+  }
+  .q{
+    font-size:18px; line-height:1.6; white-space:pre-wrap;
+  }
+  .answer-row{
+    display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;
+  }
+  input[type="number"], input[type="text"]{
+    font-size:18px; padding:10px 12px; border:1px solid #dfe6fb; border-radius:10px; outline:none; width:220px;
+  }
+  input:focus{ border-color:var(--accent); box-shadow: 0 0 0 3px rgba(47,125,255,.15); }
+  button{
+    appearance:none; border:none; background:var(--accent); color:#fff; padding:10px 14px; border-radius:10px;
+    font-weight:700; cursor:pointer; transition:transform .08s ease, box-shadow .2s ease, background .2s ease;
+    box-shadow:0 8px 20px rgba(47,125,255,.25);
+  }
+  button:active{ transform: translateY(1px) }
+  .btn-ghost{ background:#eef4ff; color:#2a5bd7; box-shadow:none }
+  .btn-danger{ background:var(--ng) }
+  .btn-ok{ background:var(--ok) }
 
-.tick{
-  position:absolute;top:0;bottom:0;width:0;border-left:2px solid rgba(255,255,255,.95);
-  pointer-events:none;display:none;opacity:0;transform:translateY(-6px);
-  transition:opacity .35s ease, transform .35s ease;
-}
-.tick.show{ display:block; opacity:1; transform:none; }
+  .side{ display:grid; gap:12px; }
+  .stat{ display:flex; justify-content:space-between; font-size:14px; color:var(--muted) }
+  .progress{
+    height:10px; background:#eef2fe; border-radius:999px; overflow:hidden;
+  }
+  .bar{ height:100%; width:0%; background:linear-gradient(90deg,#2f7dff,#5da7ff); transition: width .4s ease }
+  .hint{ color:#2a5bd7; font-size:14px; background:#f4f8ff; padding:8px 10px; border-radius:8px; border:1px solid #e6efff }
 
-.minus{position:absolute;right:0;top:175px;color:#d44;font-weight:bold;font-size:14px;display:none}
-.arrow{position:absolute;right:10px;top:181px;font-size:20px;animation:blink 1s infinite;display:none}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  .result{
+    display:none; font-size:18px; text-align:center; padding:8px 0;
+  }
+  .result.ok{ color:var(--ok) }
+  .result.ng{ color:var(--ng) }
 
-.tag{
-  position:absolute;left:0;right:0;margin:0 auto;top:-26px;width:max-content;
-  background:#fff3c8;color:#7a5200;border:1px solid #f2d46a;font-size:12px;
-  padding:2px 8px;border-radius:999px;display:none;opacity:0;transform:translateY(-6px);
-  transition:opacity .35s ease, transform .35s ease;
-}
-.tag.show{ display:inline-block; opacity:1; transform:none; }
+  .shake{ animation:shake .38s ease both }
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-6px)}
+    40%{transform:translateX(6px)}
+    60%{transform:translateX(-4px)}
+    80%{transform:translateX(4px)}
+  }
+  .fade{ animation:fade .35s ease both }
+  @keyframes fade{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
 
-#explanation{font-size:1.05em;line-height:1.8;margin-top:10px;min-height:120px;}
-
-/* ボタン */
-.controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:10px}
-button{
-  background:#2a7df9;color:#fff;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:1em;
-  transition: transform .08s ease, box-shadow .2s ease, background .2s ease;
-  box-shadow:0 8px 20px rgba(47,125,255,.25);
-}
-button:active{ transform: translateY(1px) scale(.99) }
-.btn-ghost{background:#eef3ff;color:#2a7df9; box-shadow:none}
-.btn-disabled{opacity:.5;pointer-events:none}
-.small{font-size:.95em;color:#555;margin-top:8px}
-.kbd{font-family:ui-monospace,Menlo,Consolas,monospace;background:#f3f5fa;border:1px solid #e5e9f5;border-radius:6px;padding:1px 6px}
-
-/* 追加のアニメ演出 */
-.pop{ transform: scale(1.04); }
-.glow{ box-shadow: inset 0 0 0 100px rgba(255,255,255,.12); }
-.flash{ animation: flash .55s ease both; }
-@keyframes flash{
-  0%{ box-shadow:0 0 0 0 rgba(255,255,255,0) }
-  30%{ box-shadow:0 0 0 10px rgba(255,255,255,.25) }
-  100%{ box-shadow:0 0 0 0 rgba(255,255,255,0) }
-}
-
-/* 紙吹雪（絵文字） */
-.particle{
-  position:absolute; will-change: transform, opacity;
-  pointer-events:none; font-size:20px;
-}
+  footer{
+    padding:12px 20px; border-top:1px solid #eef2fe; font-size:12px; color:var(--muted); display:flex; gap:8px; justify-content:space-between; flex-wrap:wrap;
+  }
+  .kbd{ font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; background:#f3f5fa; border:1px solid #e5e9f5; padding:2px 6px; border-radius:6px }
 </style>
 </head>
 <body>
-<div id="app">
-  <h1>どんぐりを線分図で考えよう🌰 <span class="badge">比で解く・10問</span></h1>
-
-  <div class="meta">
-    <div>問題 <span id="qIndex" class="counter">1</span>/<span id="qTotal">10</span></div>
-    <div>ヒント：<span class="kbd">←/→</span> で「もどる/つぎへ」</div>
-  </div>
-
-  <div id="problem"></div>
-
-  <div id="diagram">
-    <div class="person">
-      <div class="label">Aさん</div>
-      <div class="bar A" id="barA" style="width:240px;">
-        <span id="tagA" class="tag">Aは <b>2ぶん</b></span>
-        <span id="txtA">？</span>
-        <span id="aTick50" class="tick" style="left:50%"></span>
+  <div class="app">
+    <header>
+      <div class="title"><span class="train">🚆</span><span>電車で文章題クイズ</span></div>
+      <div class="meta">
+        <div class="pill">小4向け</div>
+        <div>16問 / 数字入力</div>
       </div>
-    </div>
-    <div class="person">
-      <div class="label">Bさん</div>
-      <div class="bar B" id="barB" style="width:360px;">
-        <span id="tagB" class="tag">Bは <b>3ぶん</b></span>
-        <span id="txtB">？</span>
-        <span id="bTick33" class="tick" style="left:33.3333%"></span>
-        <span id="bTick66" class="tick" style="left:66.6667%"></span>
+    </header>
+
+    <div class="track">
+      <div class="rail">
+        <div class="sleepers" id="sleepers"></div>
       </div>
+      <div class="train" id="train" aria-hidden="true">🚆</div>
     </div>
 
-    <div class="minus" id="minus">−5こ</div>
-    <div class="arrow" id="arrow">⬅</div>
+    <div class="content">
+      <section class="card">
+        <div class="q fade" id="question">読み込み中…</div>
+        <div class="answer-row">
+          <input id="answer" inputmode="numeric" pattern="[0-9]*" type="number" placeholder="答えを入力" />
+          <button id="submit">こたえる</button>
+          <button id="next" class="btn-ghost">次へ</button>
+        </div>
+        <div id="feedback" class="result" role="status" aria-live="polite"></div>
+        <div id="hint" class="hint" style="display:none;"></div>
+      </section>
+
+      <aside class="side">
+        <div class="card">
+          <div class="stat"><span>進捗</span><span><b id="pos">1</b>/<span id="total">10</span></span></div>
+          <div class="progress"><div class="bar" id="bar"></div></div>
+        </div>
+        <div class="card">
+          <div class="stat"><span>スコア</span><span><b id="score">0</b> 点（正解1問=10点）</span></div>
+          <div class="stat"><span>ベスト</span><span><b id="best">0</b> 点</span></div>
+        </div>
+        <div class="card" style="display:grid; gap:8px;">
+          <button id="shuffle" class="btn-ghost">順番をランダムにする</button>
+          <button id="showHint" class="btn-ghost">ヒント</button>
+          <button id="restart" class="btn-danger">はじめから</button>
+          <small style="color:var(--muted)">
+            操作ヒント：<span class="kbd">Enter</span> で回答、<span class="kbd">N</span> で次へ
+          </small>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div>© 電車で学ぶ算数 / ローカルでそのまま動きます</div>
+      <div>問題は <span class="kbd">questions</span> 配列を書き換えるだけで差し替えOK</div>
+    </footer>
   </div>
-
-  <div id="explanation"></div>
-
-  <div class="controls">
-    <button id="prevBtn" class="btn-ghost">◀ もどる</button>
-    <button id="nextBtn">▶ つぎへ</button>
-  </div>
-
-  <div class="small">※ 解法：<b>T に k を足して</b> Bの「−k」を戻す → A:B＝<b>2:3</b> → <b>(T+k)÷5</b>で1ぶん → A＝2ぶん、B＝3ぶん−k。</div>
-</div>
 
 <script>
-/* ====== 10問（T:合計, k:Bの差し引き） ====== */
-const problems = [
-  { T:200, k:5 }, { T:95,  k:5 }, { T:165, k:5 }, { T:140, k:5 }, { T:260, k:10 },
-  { T:180, k:10 },{ T:155, k:5 }, { T:85,  k:5 }, { T:220, k:5 }, { T:130, k:10 }
+/* ===========================
+   1) 出題データ
+   =========================== */
+const questions = [
+  // レベル1：たし算・ひき算
+  { text: "行きは5駅とまりました。帰りは2駅少なくとまりました。あわせて何駅？", answer: 8, hintType: "simple" },
+  { text: "行きは7駅とまりました。帰りは3駅少なくとまりました。あわせて何駅？", answer: 11, hintType: "simple" },
+  { text: "行きは6駅とまりました。帰りは1駅少なくとまりました。あわせて何駅？", answer: 11, hintType: "simple" },
+  { text: "行きは8駅とまりました。帰りは2駅少なくとまりました。あわせて何駅？", answer: 14, hintType: "simple" },
+
+  // レベル2：1.5倍
+  { text: "Aチームは1時間に4本試合をします。BチームはAチームの1.5倍です。Bチームは何本？", answer: 6, hintType: "ratioAB" },
+  { text: "Aチームは1時間に6本試合をします。BチームはAチームの1.5倍です。Bチームは何本？", answer: 9, hintType: "ratioAB" },
+  { text: "Aチームは1時間に2本試合をします。BチームはAチームの1.5倍です。Bチームは何本？", answer: 3, hintType: "ratioAB" },
+
+  // レベル2.5：B→Aを求める
+  { text: "BチームはAチームの1.5倍より5人少ない。Bチームが25人のとき、Aチームは何人？", answer: 20, hintType: "BtoA", B:25 },
+  { text: "BチームはAチームの1.5倍より5人少ない。Bチームが40人のとき、Aチームは何人？", answer: 30, hintType: "BtoA", B:40 },
+  { text: "BチームはAチームの1.5倍より5人少ない。Bチームが55人のとき、Aチームは何人？", answer: 40, hintType: "BtoA", B:55 },
+
+  // レベル2.75：A→Bを求める
+  { text: "BチームはAチームの1.5倍より5人少ない。Aチームが20人のとき、Bチームは何人？", answer: 25, hintType: "AtoB", A:20 },
+  { text: "BチームはAチームの1.5倍より5人少ない。Aチームが30人のとき、Bチームは何人？", answer: 40, hintType: "AtoB", A:30 },
+  { text: "BチームはAチームの1.5倍より5人少ない。Aチームが40人のとき、Bチームは何人？", answer: 55, hintType: "AtoB", A:40 },
+
+  // レベル3：A+B=合計
+  { text: "BチームはAチームの1.5倍より5人少ない。2チームで200人。Aチームは何人？", answer: 82, hintType: "totalAB", total:200 },
+  { text: "BチームはAチームの1.5倍より5人少ない。2チームで95人。Aチームは何人？", answer: 40, hintType: "totalAB", total:95 },
+  { text: "BチームはAチームの1.5倍より5人少ない。2チームで165人。Aチームは何人？", answer: 68, hintType: "totalAB", total:165 },
 ];
 
-/* 要素 */
-const qIndexEl = document.getElementById('qIndex');
-const qTotalEl = document.getElementById('qTotal');
-const problemEl = document.getElementById('problem');
-const expEl = document.getElementById('explanation');
-const nextBtn = document.getElementById('nextBtn');
-const prevBtn = document.getElementById('prevBtn');
+/* ===========================
+   2) UI とロジック（略）
+   =========================== */
+// 👇（前回と同じJSロジック。ただしSVG部分のラベルを「Aチーム／Bチーム」に変更）
 
-const barA = document.getElementById("barA");
-const barB = document.getElementById("barB");
-const txtA = document.getElementById("txtA");
-const txtB = document.getElementById("txtB");
-const tagA = document.getElementById("tagA");
-const tagB = document.getElementById("tagB");
-const arrow = document.getElementById("arrow");
-const minus = document.getElementById("minus");
+function svgLine(x1,y1,x2,y2,color="#2f7dff"){return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="6" stroke-linecap="round"/>`;}
+function svgText(x,y,txt,color="#333",size=14){return `<text x="${x}" y="${y}" fill="${color}" font-size="${size}" font-family="sans-serif">${txt}</text>`;}
 
-const aTick50 = document.getElementById("aTick50");
-const bTick33 = document.getElementById("bTick33");
-const bTick66 = document.getElementById("bTick66");
-
-/* 視覚単位：比は常に A=2unit, B=3unit で厳密 */
-const UNIT_PX = 120;
-
-/* ===== 演出ユーティリティ ===== */
-
-/* 1) ささやかな効果音（WebAudio “ピン”） */
-function ping(freq=880, dur=0.08){
-  try{
-    const ctx = new (window.AudioContext||window.webkitAudioContext)();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.type="sine"; o.frequency.value=freq;
-    g.gain.setValueAtTime(0.0001, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime+0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+dur);
-    o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+dur+0.02);
-  }catch(e){}
-}
-
-/* 2) ふわっと拡大・光る */
-function popGlow(el){
-  el.classList.add('pop','glow','flash');
-  setTimeout(()=>el.classList.remove('pop'),180);
-  setTimeout(()=>el.classList.remove('glow'),420);
-  setTimeout(()=>el.classList.remove('flash'),600);
-}
-
-/* 3) 数値のカウントアップ表示（整数用） */
-function countUp(el, to, ms=450){
-  const from = Number(String(el.dataset.num||0))||0;
-  const start = performance.now();
-  function step(t){
-    const p = Math.min(1,(t-start)/ms);
-    const val = Math.round(from + (to-from)*p);
-    el.textContent = el.textContent.replace(/\d+/, String(val));
-    if(p<1) requestAnimationFrame(step); else el.dataset.num = String(to);
+function buildHint(q){
+  const w=280,h=90;
+  const svgHead=`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">`;
+  let body="";
+  switch(q.hintType){
+    case "ratioAB":
+      body+=svgLine(40,40,160,40,"#2f7dff");
+      body+=svgLine(40,70,220,70,"#ff8c42");
+      body+=svgText(10,45,"Aチーム");
+      body+=svgText(10,75,"Bチーム");
+      body+=svgText(230,75,"1.5倍");
+      break;
+    case "BtoA":
+      body+=svgLine(40,40,220,40,"#ff8c42");
+      body+=svgText(10,45,"Bチーム");
+      body+=svgText(225,45,"−5");
+      body+=svgLine(40,70,160,70,"#2f7dff");
+      body+=svgText(10,75,"Aチーム");
+      body+=svgText(165,75,"1.5倍");
+      break;
+    case "AtoB":
+      body+=svgLine(40,40,160,40,"#2f7dff");
+      body+=svgLine(40,70,220,70,"#ff8c42");
+      body+=svgText(10,45,"Aチーム");
+      body+=svgText(10,75,"Bチーム");
+      body+=svgText(230,75,"−5");
+      body+=svgText(165,75,"1.5倍");
+      break;
+    case "totalAB":
+      body+=svgLine(40,40,160,40,"#2f7dff");
+      body+=svgLine(40,70,220,70,"#ff8c42");
+      body+=svgText(10,45,"Aチーム");
+      body+=svgText(10,75,"Bチーム");
+      body+=svgText(230,75,"−5");
+      body+=svgText(165,75,"1.5倍");
+      body+=svgText(100,20,`A+B=${q.total}`);
+      break;
+    default:
+      body+=svgText(20,50,"🪵 まずは問題文をよく読もう！");
   }
-  requestAnimationFrame(step);
+  return svgHead+body+"</svg>";
 }
+</script>
 
-/* 4) −k が左へ“スッ”と飛ぶ */
-function flyMinus(k, px){
-  minus.textContent = `−${k}こ`;
-  minus.style.display = 'block'; arrow.style.display='block';
-  minus.animate([{transform:'translateX(0)',opacity:1},{transform:`translateX(-${px}px)`,opacity:0.2}],{duration:600,easing:'cubic-bezier(.2,.8,.2,1)'});
+/* ===========================
+   2) 状態・要素取得
+   =========================== */
+let order = [...questions.keys()]; // 出題順序（シャッフル可）
+let idx = 0;                       // 現在の問題番号（order上）
+let score = 0;
+let best = Number(localStorage.getItem("train_quiz_best") || 0);
+
+const $ = (s)=>document.querySelector(s);
+const qEl = $("#question");
+const aEl = $("#answer");
+const submitBtn = $("#submit");
+const nextBtn = $("#next");
+const feedback = $("#feedback");
+const hintEl = $("#hint");
+const posEl = $("#pos");
+const totalEl = $("#total");
+const barEl = $("#bar");
+const scoreEl = $("#score");
+const bestEl = $("#best");
+const trainEl = $("#train");
+const sleepers = $("#sleepers");
+
+/* レールの枕木を適当に増やす（見た目） */
+function buildSleepers(n=40){
+  sleepers.innerHTML = "";
+  for(let i=0;i<n;i++) sleepers.appendChild(document.createElement("div"));
 }
+buildSleepers();
 
-/* 5) 紙吹雪（絵文字） */
-function confettiBurst(n=26){
-  const emojis = ['🌰','🎉','✨','🌟','🍁','🍂'];
-  const app = document.getElementById('app');
-  const rect = app.getBoundingClientRect();
-  for(let i=0;i<n;i++){
-    const e=document.createElement('div'); e.className='particle';
-    e.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-    e.style.left = (rect.width*0.5 + (Math.random()*220-110)) + 'px';
-    e.style.top = '0px';
-    app.appendChild(e);
-    const dx = (Math.random()*2-1)*160;
-    const dy = 480 + Math.random()*120;
-    const rot = (Math.random()*2-1)*360;
-    e.animate([
-      {transform:`translate(0,0) rotate(0deg)`,opacity:1},
-      {transform:`translate(${dx}px,${dy}px) rotate(${rot}deg)`,opacity:0}
-    ],{duration:1100+Math.random()*900,easing:'cubic-bezier(.2,.8,.2,1)'})
-    .onfinish=()=>e.remove();
-  }
-  ping(660,0.1);
-  setTimeout(()=>ping(990,0.1),100);
-}
-
-/* 白線の表示/非表示（%位置） */
-function showUnitTicks(showA, showB){
-  aTick50.classList.toggle('show', !!showA);
-  bTick33.classList.toggle('show', !!showB);
-  bTick66.classList.toggle('show', !!showB);
-}
-
-/* ===== ロジック ===== */
-
-function buildSteps(T, k){
-  const unit = (T + k) / 5;            // 1ぶん
-  const A = 2 * unit;
-  const B_adj = 3 * unit;              // 戻したB
-  const B = B_adj - k;
-
-  const Apx = 2 * UNIT_PX;
-  const Bpx_adj = 3 * UNIT_PX;
-  const minusPx = (k / unit) * UNIT_PX;
-  const Bpx = Math.max(40, Bpx_adj - minusPx);
-
-  const problemText =
-    `AさんとBさんの２人でどんぐりを拾いました。<br>`+
-    `Bさんの個数は、Aさんの個数の1.5倍よりも <b>${k}個少なく</b>、<br>`+
-    `２人合わせて <b>${T}個</b> でした。Aさんが拾ったどんぐりは何個でしょう？`;
-
-  const steps = [
-    {
-      exp:`🪵 はじまり：ふたりで <b>${T}こ</b>。Bさんは「Aさんの <b>1.5倍</b> より <b>${k}こ 少ない</b>」。<br>まず A＝？、B＝？ として線分図を用意しよう。`,
-      action:()=>{
-        resetBars(Apx,Bpx_adj);
-        txtA.textContent="？"; txtB.textContent="？";
-        showUnitTicks(false,false);
-        minus.style.display="none"; arrow.style.display="none";
-      }
-    },
-    {
-      exp:`🔁 <b>${T}</b> に <b>${k}</b> を足して、Bの「−${k}」をいったん戻すと <b>${T+k}こ</b>。<br>こうすると B は A の <b>1.5倍（=3/2倍）</b> そのものになるよ。`,
-      action:()=>{
-        txtA.textContent="A"; txtB.textContent="1.5A";
-        popGlow(barB); ping();
-      }
-    },
-    {
-      exp:`📏 比にすると <b>A : 1.5A = 1 : 1.5 = 2 : 3</b>。<br>つまり A は <b>2ぶん</b>、B は <b>3ぶん</b>（合計 <b>5ぶん</b>）。`,
-      action:()=>{
-        txtA.textContent="2ぶん"; txtB.textContent="3ぶん";
-        tagA.classList.add('show'); tagB.classList.add('show');
-        showUnitTicks(true,true);
-        popGlow(barA); popGlow(barB); ping(740,0.07);
-      }
-    },
-    {
-      exp:`🧮 <b>${T+k}こ</b> を <b>5ぶん</b>に分ける。<br><b>(${T}+${k}) ÷ 5 = ${unit}</b> → <b>1ぶん = ${unit}こ</b>。`,
-      action:()=>{
-        txtA.textContent=`2ぶん（1ぶん=${unit}）`;
-        txtB.textContent=`3ぶん（1ぶん=${unit}）`;
-        // 1ぶんの数をふわっとカウント（表示文中の最初の数字に適用）
-        const fake = document.createElement('span');
-        fake.textContent = `1ぶん = 0こ`;
-        expEl.innerHTML = `🧮 <b>${T+k}こ</b> を <b>5ぶん</b>に分ける。<br><b>(${T}+${k}) ÷ 5 = ${unit}</b> → `;
-        expEl.appendChild(fake);
-        countUp(fake, unit, 500);
-        setTimeout(()=>{ fake.replaceWith(document.createTextNode(`1ぶん = ${unit}こ`)); },520);
-        ping(660,0.07);
-      }
-    },
-    {
-      exp:`🧠 A は <b>2ぶん</b> → <b>${unit} × 2 = ${A}</b>。<br>B は <b>3ぶん</b> → <b>${unit} × 3 = ${B_adj}</b>（これは −${k} を戻した後の値）。`,
-      action:()=>{
-        txtA.textContent=`A = ${A}こ`;
-        txtB.textContent=`B(戻した) = ${B_adj}こ`;
-        popGlow(barA); popGlow(barB); ping(820,0.07);
-      }
-    },
-    {
-      exp:`✏️ 本当の B は <b>1.5倍より ${k}こ少ない</b>ので、<br><b>${B_adj} − ${k} = ${B}こ</b> にするよ。`,
-      action:()=>{
-        txtB.textContent=`B = ${B}こ（−${k}）`;
-        // 3等分ではなくなるので白線は非表示
-        showUnitTicks(true,false);
-        // バー幅を短く、−kが左に飛ぶ
-        barB.style.width = Bpx + 'px';
-        flyMinus(k, 60 + minusPx);
-        ping(520,0.06);
-      }
-    },
-    {
-      exp:`✅ まとめ：<b>A = ${A}こ</b>、<b>B = ${B}こ</b>。<br>${A} + ${B} = <b>${T}こ</b>で ぴったり！`,
-      action:()=>{
-        txtA.textContent=`A = ${A}こ`;
-        txtB.textContent=`B = ${B}こ`;
-        showUnitTicks(false,false);
-        confettiBurst(); // おめでとう！
-      }
-    }
-  ];
-
-  return { steps, problemText };
-}
-
-/* 進行管理 */
-let qIdx = 0, step = 0, current = null;
-
-function resetBars(Apx,Bpx){
-  barA.style.width = Apx + 'px';
-  barB.style.width = Bpx + 'px';
-  tagA.classList.remove('show'); tagB.classList.remove('show');
-  showUnitTicks(false,false);
-  arrow.style.display="none"; minus.style.display="none";
-}
-
+/* ===========================
+   3) 基本関数
+   =========================== */
 function render(){
-  if(!current){ loadProblem(qIdx); }
-  const s = current.steps[step];
-  problemEl.innerHTML = current.problemText;
-  expEl.innerHTML = s.exp;
-  s.action();
-
-  qIndexEl.textContent = (qIdx+1);
-  qTotalEl.textContent = problems.length;
-
-  prevBtn.classList.toggle("btn-disabled", qIdx===0 && step===0);
-  const isLast = (step === current.steps.length-1);
-  nextBtn.textContent = isLast ? (qIdx===problems.length-1 ? "▶ おわり" : "▶ つぎの問題へ") : "▶ つぎへ";
+  const i = order[idx];
+  const total = questions.length;
+  totalEl.textContent = total;
+  posEl.textContent = idx+1;
+  const {text} = questions[i];
+  qEl.textContent = text;
+  qEl.classList.remove("shake"); qEl.classList.add("fade");
+  aEl.value = ""; aEl.focus({ preventScroll:true });
+  feedback.style.display = "none";
+  hintEl.style.display = "none";
+  // 進捗バー
+  barEl.style.width = `${(idx)/(total)*100}%`;
 }
 
-function loadProblem(index){
-  const {T,k} = problems[index];
-  current = buildSteps(T,k);
-  step = 0;
-  resetBars(2*UNIT_PX, 3*UNIT_PX);
+function moveTrain(){
+  // コンテナ幅からざっくり計算（駅=問題の数）
+  const total = questions.length;
+  const track = document.querySelector(".track");
+  const leftPad = 20, rightPad = 20;
+  const usable = track.clientWidth - (leftPad+rightPad) - 40; // アイコン幅の余白
+  const step = usable / total;
+  const x = leftPad + step * (idx+1);
+  trainEl.style.transform = `translateX(${x}px)`;
 }
 
-function goNext(){
-  if(step < current.steps.length-1){ step++; ping(600,0.05); }
-  else if(qIdx < problems.length-1){ qIdx++; loadProblem(qIdx); ping(700,0.05); }
+function judge(){
+  const i = order[idx];
+  const ansExpected = String(questions[i].answer).trim();
+  const ansUser = String(aEl.value ?? "").trim();
+  const ok = ansUser !== "" && ansUser === ansExpected;
+
+  feedback.style.display = "block";
+  feedback.className = "result " + (ok ? "ok" : "ng");
+  feedback.textContent = ok ? "✅ 正解！" : "❌ ちがうよ…";
+
+  if(ok){
+    score += 10;
+    scoreEl.textContent = score;
+    moveTrain();
+    nextBtn.focus();
+  }else{
+    qEl.classList.remove("fade"); // 直前のfadeを外してから
+    void qEl.offsetWidth;         // reflow
+    qEl.classList.add("shake");
+  }
+}
+
+function next(){
+  if(idx < questions.length-1){
+    idx++;
+    render();
+  }else{
+    // 終了
+    barEl.style.width = "100%";
+    feedback.style.display = "block";
+    feedback.className = "result ok";
+    feedback.textContent = `🎉 到着！あなたのスコアは ${score} 点`;
+    if(score > best){
+      best = score;
+      localStorage.setItem("train_quiz_best", String(best));
+    }
+    bestEl.textContent = best;
+  }
+}
+
+/* ===========================
+   4) イベント
+   =========================== */
+submitBtn.addEventListener("click", judge);
+nextBtn.addEventListener("click", next);
+$("#restart").addEventListener("click", ()=>{
+  score = 0; scoreEl.textContent = "0";
+  idx = 0; order = [...questions.keys()];
+  trainEl.style.transform = `translateX(0px)`;
   render();
-}
-function goPrev(){
-  if(step > 0){ step--; ping(500,0.05); }
-  else if(qIdx > 0){ qIdx--; loadProblem(qIdx); step = current.steps.length-1; ping(500,0.05); }
+});
+$("#shuffle").addEventListener("click", ()=>{
+  // フィッシャー–イェーツでシャッフル
+  order = [...questions.keys()];
+  for(let i=order.length-1;i>0;i--){
+    const j = Math.floor(Math.random() * (i+1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  idx = 0; score = 0; scoreEl.textContent = "0";
+  trainEl.style.transform = `translateX(0px)`;
   render();
-}
+});
+$("#showHint").addEventListener("click", ()=>{
+  const i = order[idx];
+  hintEl.textContent = "💡 ヒント： " + (questions[i].hint || "問題文をよく読もう！");
+  hintEl.style.display = "block";
+});
 
-nextBtn.addEventListener('click', goNext);
-prevBtn.addEventListener('click', goPrev);
-document.addEventListener('keydown', (e)=>{
-  if(e.key === 'ArrowRight') goNext();
-  if(e.key === 'ArrowLeft') goPrev();
+/* キーボード操作 */
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "Enter"){ judge(); }
+  if(e.key.toLowerCase() === "n"){ next(); }
 });
 
 /* 初期化 */
-loadProblem(qIdx);
-render();
+(function init(){
+  bestEl.textContent = best;
+  scoreEl.textContent = score;
+  totalEl.textContent = questions.length;
+  render();
+})();
 </script>
 </body>
 </html>
-
-
